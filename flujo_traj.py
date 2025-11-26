@@ -1,3 +1,4 @@
+import numpy as np
 """
 el flujo de trabajo debe ser de esta manera para poder avanzar correctamente
 -uso de librerias: numpy, cv2,
