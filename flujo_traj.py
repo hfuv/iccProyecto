@@ -5,5 +5,6 @@ el flujo de trabajo debe ser de esta manera para poder avanzar correctamente
 """
 #-------------------------
 """
-usare kmeans para la distancia euclideana 
+usare kmeans para la distancia euclideana la distancia euclideana se puede calcular con numpy
+
 """
