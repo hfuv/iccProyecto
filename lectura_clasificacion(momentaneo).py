@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.constants import precision
 from sklearn import datasets
 import cv2 # ver imagenes
 import glob # glob servira para la lectura de rutas
@@ -86,9 +87,21 @@ def matriz_2(numero:int,cercanos:int,info:bool,permiso_registro:bool): # analisi
     etiqueta_columna = ["predict_positivo", "predict_negativo"]
     matriz_confusion = pd.DataFrame(matriz, index=etiqueta_fila, columns=etiqueta_columna)
     accuracy=(matriz[0,0]+matriz[1,1])/np.sum(matriz)
-    precision=matriz[0,0]/(matriz[0,0]+matriz[1,0])
-    recall=matriz[0,0]/(matriz[0,0]+matriz[0,1])
-    F1_Score=2*(precision*recall)/(precision+recall)
+    if matriz[0,0]+matriz[1,0]==0:
+        print("no hay datos validos en precision")
+        precision=0.0
+    else:
+        precision=matriz[0,0]/(matriz[0,0]+matriz[1,0])
+    if matriz[0,0]+matriz[0,1]==0:
+        print("no hay datos validos en recall")
+        recall=0.0
+    else:
+        recall=matriz[0,0]/(matriz[0,0]+matriz[0,1])
+    if precision==0 or recall==0 or precision+recall==0:
+        print("no hay datos validos en F1_Score")
+        F1_Score=0.0
+    else:
+        F1_Score=2*(precision*recall)/(precision+recall)
     if permiso_registro:
         matriz_confusion.to_csv("Matriz_Confusion2(detalles).csv")
     return matriz_confusion,{'accuracy':accuracy,'precision':precision,'recall':recall,'F1 Score':F1_Score}
