@@ -18,7 +18,6 @@ def clasificador(aplanada,l:int): # actualizando clasificador para 3
    x=[]# distancias
    y=[]# etiquetas
    r=[]# lista de cercanos
-#imagen_ingreso=0 # es solo para poner valor falta todavia el 1797 es de target
    for a in range(1797): # por shape
       x.append(np.sqrt(np.sum(np.power(aplanada-w[a],2))))
       y.append(t[a])
@@ -27,15 +26,14 @@ def clasificador(aplanada,l:int): # actualizando clasificador para 3
        r.append(sorted(t)[q][1])
    return r
 # usare archivos en forma serial para poder hacer cambios en la ruta
-# no esta listo
-def incisos(cantidad_de_cercanos:int):
+def preguntas(cantidad_de_cercanos:int,permitir_info:bool):
     d=glob.glob("Datasets/*.png")# la clave verdadera por favor poner con _numero_
     matriz = np.zeros((10, 10))
     p=1
     for a in d:
         t=clasificador(normalizador(a),cantidad_de_cercanos)
-        # contador=0
-        print("las etiquetas de las distancias del dato "+str(p)+" es "+str(t),"su verdadera etiqueta es:"+str(a.split("_")[-2]))
+        if permitir_info:
+           print("las etiquetas de las distancias del dato "+str(p)+" es "+str(t),"su verdadera etiqueta es:"+str(a.split("_")[-2]))
         diccionario_auxiliar={}
         for i in t:
             diccionario_auxiliar[i]=0
@@ -44,15 +42,22 @@ def incisos(cantidad_de_cercanos:int):
         n=list(diccionario_auxiliar.values())
         valores=list(diccionario_auxiliar.items())
         for llave,valor in valores:
-           if valor>=len(t)/2 :
+           if valor>=len(t)/2 and permitir_info :
                print("Soy la inteligencia artificial, y he detectado que el dígito ingresado corresponde al número:", str(llave))
                matriz[int(a.split("_")[-2])][llave] +=1
                break
-           elif valor==max(n): # se ve la cantidad de veces aparece una clave
+           elif valor==max(n) and permitir_info: # se ve la cantidad de veces aparece una clave
                print("Soy la inteligencia artificial, y no hay un dato dominante por lo tanto tomare el valor mayor:",
                      str(llave))
                matriz[int(a.split("_")[-2])][llave] += 1
                break
+           if not permitir_info:
+               if valor >= len(t) / 2:
+                   matriz[int(a.split("_")[-2])][llave] += 1
+                   break
+               elif valor == max(n) :
+                   matriz[int(a.split("_")[-2])][llave] += 1
+                   break
         p+=1
     etiquetas_guia=["0_supu","1_supu","2_supu","3_supu","4_supu","5_supu","6_supu","7_supu","8_supu","9_supu"]
     etiquetas_guia02= ["0_real", "1_real", "2_real", "3_real", "4_real", "5_real", "6_real", "7_real", "8_real", "9_real"]
@@ -60,9 +65,9 @@ def incisos(cantidad_de_cercanos:int):
     pd.set_option('display.max_rows', None) # para ver asi sin mas
     pd.set_option('display.max_columns', None) # para ver asi sin mas
     return matriz_lectura,matriz
-# falta
-def matriz_2(numero:int,cercanos:int): # analisis de un numero que se quiera
-    r,s=incisos(cercanos)
+
+def matriz_2(numero:int,cercanos:int,info:bool): # analisis de un numero que se quiera
+    r,s=preguntas(cercanos,info)
     matriz=np.zeros((2,2))
     matriz[0,0]=s[numero][numero] # verdadero positivo
     matriz[1,0]=np.sum(s[:,numero])-matriz[0,0]# falso positivo
@@ -76,3 +81,4 @@ def matriz_2(numero:int,cercanos:int): # analisis de un numero que se quiera
     recall=matriz[0,0]/(matriz[0,0]+matriz[0,1])
     F1_Score=2*(precision*recall)/(precision+recall)
     return matriz_confusion,{'accuracy':accuracy,'precision':precision,'recall':recall,'F1 Score':F1_Score}
+print(preguntas(3,False))
