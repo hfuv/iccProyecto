@@ -26,7 +26,7 @@ def clasificador(aplanada,l:int): # actualizando clasificador para 3
        r.append(sorted(t)[q][1])
    return r
 # usare archivos en forma serial para poder hacer cambios en la ruta
-def preguntas(cantidad_de_cercanos:int,permitir_info:bool):
+def preguntas(cantidad_de_cercanos:int,permitir_info:bool,permiso_registro:bool):
     d=glob.glob("Datasets/*.png")# la clave verdadera por favor poner con _numero_
     matriz = np.zeros((10, 10))
     p=1
@@ -62,12 +62,14 @@ def preguntas(cantidad_de_cercanos:int,permitir_info:bool):
     etiquetas_guia=["0_supu","1_supu","2_supu","3_supu","4_supu","5_supu","6_supu","7_supu","8_supu","9_supu"]
     etiquetas_guia02= ["0_real", "1_real", "2_real", "3_real", "4_real", "5_real", "6_real", "7_real", "8_real", "9_real"]
     matriz_lectura=pd.DataFrame(matriz,index=etiquetas_guia02,columns=etiquetas_guia)
+    if permiso_registro:
+        matriz_lectura.to_csv("Matriz_Confusion(detalles).csv")
     pd.set_option('display.max_rows', None) # para ver asi sin mas
     pd.set_option('display.max_columns', None) # para ver asi sin mas
     return matriz_lectura,matriz
 
-def matriz_2(numero:int,cercanos:int,info:bool): # analisis de un numero que se quiera
-    r,s=preguntas(cercanos,info)
+def matriz_2(numero:int,cercanos:int,info:bool,permiso_registro:bool): # analisis de un numero que se quiera
+    r,s=preguntas(cercanos,info,permiso_registro)
     matriz=np.zeros((2,2))
     matriz[0,0]=s[numero][numero] # verdadero positivo
     matriz[1,0]=np.sum(s[:,numero])-matriz[0,0]# falso positivo
@@ -80,5 +82,6 @@ def matriz_2(numero:int,cercanos:int,info:bool): # analisis de un numero que se 
     precision=matriz[0,0]/(matriz[0,0]+matriz[1,0])
     recall=matriz[0,0]/(matriz[0,0]+matriz[0,1])
     F1_Score=2*(precision*recall)/(precision+recall)
+    if permiso_registro:
+        matriz_confusion.to_csv("Matriz_Confusion2(detalles).csv")
     return matriz_confusion,{'accuracy':accuracy,'precision':precision,'recall':recall,'F1 Score':F1_Score}
-print(preguntas(3,False))
