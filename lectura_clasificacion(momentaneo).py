@@ -82,8 +82,8 @@ def matriz_2(numero:int,cercanos:int,info:bool,permiso_registro:bool): # analisi
     matriz[0,1]=np.sum(s[numero,:])-matriz[0,0] # falso negativo
     matriz[1,1]=np.sum(s)-matriz[0,0]-matriz[0,1]-matriz[1,0]# verdadero negativo
     # cabeceras
-    etiqueta_fila=["real_x","real_y"]
-    etiqueta_columna = ["predict_x", "predict_y"]
+    etiqueta_fila=["real_positivo","real_negativo"]
+    etiqueta_columna = ["predict_positivo", "predict_negativo"]
     matriz_confusion = pd.DataFrame(matriz, index=etiqueta_fila, columns=etiqueta_columna)
     accuracy=(matriz[0,0]+matriz[1,1])/np.sum(matriz)
     precision=matriz[0,0]/(matriz[0,0]+matriz[1,0])
