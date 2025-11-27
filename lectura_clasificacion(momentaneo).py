@@ -59,16 +59,20 @@ def incisos(cantidad_de_cercanos:int):
     matriz_lectura=pd.DataFrame(matriz,index=etiquetas_guia02,columns=etiquetas_guia)
     pd.set_option('display.max_rows', None) # para ver asi sin mas
     pd.set_option('display.max_columns', None) # para ver asi sin mas
-    return matriz_lectura
+    return matriz_lectura,matriz
 # falta
-def matriz(cantidad_de_cercanos:int):
-    d=glob.glob("Datasets/*.png")# la clave verdadera por favor poner con _numero_
-    matriz = np.zeros((10, 10))
-    for a in d:
-        t=clasificador(normalizador(a),cantidad_de_cercanos)
-        # contador=0
-        for i in t:
-            matriz[5][i]+=1 # cocatenar con panda con las cabeceras
-    return matriz
-
-print(incisos(3))
+def matriz_2(numero:int,cercanos:int): # analisis de un numero que se quiera
+    r,s=incisos(cercanos)
+    matriz=np.zeros((2,2))
+    matriz[0,0]=s[numero][numero] # verdadero positivo
+    matriz[1,0]=np.sum(s[:,numero])-matriz[0,0]# falso positivo
+    matriz[0,1]=np.sum(s[numero,:])-matriz[0,0] # falso negativo
+    matriz[1,1]=np.sum(s)-matriz[0,0]-matriz[0,1]-matriz[1,0]# verdadero negativo
+    etiqueta_fila=["real_x","real_y"]
+    etiqueta_columna = ["predict_x", "predict_y"]
+    matriz_confusion = pd.DataFrame(matriz, index=etiqueta_fila, columns=etiqueta_columna)
+    accuracy=(matriz[0,0]+matriz[1,1])/np.sum(matriz)
+    precision=matriz[0,0]/(matriz[0,0]+matriz[1,0])
+    recall=matriz[0,0]/(matriz[0,0]+matriz[0,1])
+    F1_Score=2*(precision*recall)/(precision+recall)
+    return matriz_confusion,{'accuracy':accuracy,'precision':precision,'recall':recall,'F1 Score':F1_Score}
