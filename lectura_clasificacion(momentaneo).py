@@ -1,16 +1,15 @@
 import numpy as np
-from scipy.constants import precision
 from sklearn import datasets
 import cv2 # ver imagenes
 import glob # glob servira para la lectura de rutas
 import pandas as pd # ver los resultados
 def normalizador(ruta_de_imagen):
    img_array = cv2.imread(ruta_de_imagen, cv2.IMREAD_GRAYSCALE) #"Datasets/(un nombre cualquiera)_numero que es _.png" es de esta forma como debe escribirse
-   img_array=255-img_array # se invierten los colores
+   img_array=255-img_array # se invierten la escala
    nueva_img = cv2.resize(img_array, (8, 8)) # se hace un reescalado
    nueva_img=np.round((nueva_img/255.0)*16) # se normaliza la imagen
-   aplanada=nueva_img.flatten().reshape(1, -1) # se aplana la imagen
-   #flatten() ya aplana la imagen pero es un vector simple , # reshape(fila,columnas) entonces se pide fila 1 y columna -1 para que alcancen todos los elementos
+   aplanada=nueva_img.reshape(1, -1) # se aplana la imagen
+   # reshape(fila,columnas) entonces se pide fila 1 y columna -1 para que alcancen todos los elementos
    return aplanada
 
 def clasificador(aplanada,l:int): # actualizando clasificador para 3
@@ -20,8 +19,8 @@ def clasificador(aplanada,l:int): # actualizando clasificador para 3
    x=[]# distancias
    y=[]# etiquetas
    r=[]# lista de cercanos
-   for a in range(1797): # por shape // da las distancia euclideana
-      x.append(np.sqrt(np.sum(np.power(aplanada-w[a],2))))
+   for a in range(1797): # por shape // da las distancia euclideana la formula utilizada
+      x.append(np.sqrt(np.sum(np.power(aplanada-(w[a].reshape(1, -1)),2)))) # se .reshape(1, -1) debido al Broadcasting de Numpy que soluciono eso
       # uso de operacions de numpy power para potencias y listo
       y.append(t[a])
    t=list(zip(x, y)) # lista de distancias y su clave se hace zip para despues ordenar
@@ -69,7 +68,7 @@ def preguntas(cantidad_de_cercanos:int,permitir_info:bool,permiso_registro:bool)
     etiquetas_guia02= ["0_real", "1_real", "2_real", "3_real", "4_real", "5_real", "6_real", "7_real", "8_real", "9_real"]
     matriz_lectura=pd.DataFrame(matriz,index=etiquetas_guia02,columns=etiquetas_guia)
     if permiso_registro:
-        matriz_lectura.to_csv("Matriz_Confusion(detalles).csv")
+        matriz_lectura.to_csv("Matriz_Confusion1(detalles).csv")
     pd.set_option('display.max_rows', None) # para ver asi sin mas
     pd.set_option('display.max_columns', None) # para ver asi sin mas
     return matriz_lectura,matriz
@@ -105,3 +104,4 @@ def matriz_2(numero:int,cercanos:int,info:bool,permiso_registro:bool): # analisi
     if permiso_registro:
         matriz_confusion.to_csv("Matriz_Confusion2(detalles).csv")
     return matriz_confusion,{'accuracy':accuracy,'precision':precision,'recall':recall,'F1 Score':F1_Score}
+print(preguntas(3,False,False))
