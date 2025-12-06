@@ -15,7 +15,7 @@ def normalizador(ruta_de_imagen):
 def clasificador(aplanada,l:int): # actualizando clasificador para 3
    datos=datasets.load_digits() # se carga los digitos
    w=datos["data"] # con esto se compara uso de shape-> (1797,64)
-   t=datos["target"] # en target
+   t=datos["target"] # en target es la etiqueta
    x=[]# distancias
    y=[]# etiquetas
    r=[]# lista de cercanos
@@ -68,7 +68,7 @@ def preguntas(cantidad_de_cercanos:int,permitir_info:bool,permiso_registro:bool)
     etiquetas_guia02= ["0_real", "1_real", "2_real", "3_real", "4_real", "5_real", "6_real", "7_real", "8_real", "9_real"]
     matriz_lectura=pd.DataFrame(matriz,index=etiquetas_guia02,columns=etiquetas_guia)
     if permiso_registro:
-        matriz_lectura.to_csv("Matriz_Confusion1(detalles).csv")
+        matriz_lectura.to_csv("Matriz_Confusion1(detalles01).csv")
     pd.set_option('display.max_rows', None) # para ver asi sin mas
     pd.set_option('display.max_columns', None) # para ver asi sin mas
     return matriz_lectura,matriz
@@ -102,6 +102,5 @@ def matriz_2(numero:int,cercanos:int,info:bool,permiso_registro:bool): # analisi
     else:
         F1_Score=2*(precision*recall)/(precision+recall)
     if permiso_registro:
-        matriz_confusion.to_csv("Matriz_Confusion2(detalles).csv")
+        matriz_confusion.to_csv("Matriz_Confusion1(detalles).csv")
     return matriz_confusion,{'accuracy':accuracy,'precision':precision,'recall':recall,'F1 Score':F1_Score}
-print(preguntas(3,False,False))
